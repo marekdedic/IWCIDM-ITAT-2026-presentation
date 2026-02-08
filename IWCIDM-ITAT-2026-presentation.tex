@@ -1,0 +1,435 @@
+\documentclass[10pt, aspectratio=169]{beamer}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{polyglossia}
+
+\usepackage{adjustbox}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{appendixnumberbeamer}
+\usepackage[backend=biber,style=iso-authoryear,sortlocale=en_US,autolang=other,bibencoding=UTF8]{biblatex}
+\usepackage{booktabs}
+\usepackage{color}
+\usepackage{csquotes}
+\usepackage{datetime}
+\usepackage{fontspec}
+\usepackage{graphics}
+\usepackage{hyperref}
+\usepackage{makecell}
+\usepackage{mathrsfs}
+\usepackage{microtype}
+\usepackage{multirow}
+\usepackage{pifont}
+\usepackage[mode=buildnew]{standalone}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{todonotes}
+\usepackage{ulem}
+\usepackage{url}
+
+\addbibresource{zotero.bib}
+
+\setdefaultlanguage{english}
+\setotherlanguage{czech}
+\setmainfont{TeX Gyre Termes}
+\usetheme{Boadilla}
+\usecolortheme{crane}
+\setbeamertemplate{title page}[default][rounded=true,shadow=false]
+\setbeamertemplate{section in toc}[ball unnumbered]
+\setbeamertemplate{bibliography item}{}
+
+\hypersetup{%
+	pdfencoding=auto,
+	unicode=true,
+	citecolor=green,
+	filecolor=blue,
+	linkcolor=red,
+	urlcolor=blue
+}
+
+\makeatletter
+\newcommand*{\currentSection}{\@currentlabelname}
+\makeatother
+
+\def\mathdefault#1{#1}
+
+\input{notation}
+
+\title[HPO for GNNs]
+{%
+	Benchmarking and Transfer Learning for Hyperparameter Optimization of Graph Neural Networks
+}
+
+\newdate{presentation}{6}{3}{2026}
+\date[March 2026]{ICAART 2026, \displaydate{presentation}}
+
+\author[Dědič \& Bělohlávek]
+{%
+	Marek~Dědič\inst{1, 2}
+	Michal~Bělohlávek\inst{1, 2}
+}
+
+\institute[CTU in Prague, Cisco]
+{%
+	\inst{1} Czech Technical University in Prague \and
+	\inst{2} Cisco Systems, Inc.
+}
+
+\begin{document}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{Parameters \& hyperparameters}
+	\begin{itemize}
+		\item Learners have parameters and hyperparameters
+		\item Parameters optimized automatically
+		\item Hyper-parameters set by humans
+	\end{itemize}
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/HPO.png}\footcite{kaiku_hyperparameter_2023}
+\end{frame}
+
+\begin{frame}{GNN hyperparameter setups}
+	\centering
+	\only<1>{\includestandalone[width=\linewidth, page = 1]{images/hyperparameter-setups/hyperparameter-setups}}
+	\only<2>{\includestandalone[width=\linewidth, page = 2]{images/hyperparameter-setups/hyperparameter-setups}}
+	\only<3>{\includestandalone[width=\linewidth, page = 3]{images/hyperparameter-setups/hyperparameter-setups}}
+\end{frame}
+
+\begin{frame}{Hyper-parameter optimization}
+	\begin{itemize}
+		\item Hyper-parameters need to be found (semi-)automatically
+		\item No gradients \( \rightarrow \) black-box problem
+		\item \textit{Expensive} black-box problem
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{HPO loop}
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/HPO-loop.pdf}\footcite{bischl_hyperparameter_2023}
+\end{frame}
+
+\begin{frame}{HPO formalization}
+	Formally, a HPO method \( \tau \) is a function that proposes a hyperparameter configuration \( \hat{\lambda} \) to try next:
+	\[
+		\hat{\lambda} = \tau \left( \mathcal{D}, \mathscr{F}, \tilde{\Lambda}, \rho \right)
+	\]
+	given
+	\begin{itemize}
+		\item \( \mathcal{D} \): dataset
+		\item \( \mathscr{F} \): learning algorithm
+		\item \( \tilde{\Lambda} \): search space
+		\item \( \rho \): performance metric
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Contributions}
+	\textbf{Goals \& contributions}:
+	\begin{itemize}
+		\item Systematic HPO Benchmark on GNNs
+		\item Meta-Learning for Hyperparameter Transfer\footnote{Building on previous work \cite{prochazka_which_2023}}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Evaluated standard algorithms}
+	\begin{itemize}
+		\item Grid search
+		\item Random search
+		\item Bayesian optimization
+		\item Sobol Quasi-Monte Carlo
+		\item Tree-structured Parzen Estimator
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Experiment setup}
+	\begin{itemize}
+		\item 9 standard datasets (34 nodes -- 169k nodes)
+		\item GraphSAGE model with 8 hyperparameters
+		\item 10 repeated iterations for each configuration
+		\item HPO early-stopping based on wall-clock time \& improvement
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Benchmark results}
+	\begin{columns}[t,onlytextwidth]
+		\begin{column}{0.45\textwidth}
+			\begin{itemize}
+				\item SMBO methods (BO and TPE) outperform other methods across all datasets. Between BO and TPE there is no clear winner.
+				\item Simple methods like random search and grid search remain solid choices for HPO as they usually trail behind SMBO methods by only a small margin.
+				\item Sobol QMC consistently ranks worse than SMBO methods.
+			\end{itemize}
+		\end{column}
+
+		\begin{column}{0.52\textwidth}
+			\centering
+			\scriptsize
+			\begin{table}
+				\centering
+				\begin{tabular}{lccccc}
+					\toprule
+					\textbf{Dataset} & \textbf{Random}    & \textbf{Grid} & \textbf{BO}        & \textbf{TPE}       & \textbf{QMC}       \\
+					\midrule
+					Cora             & 0.8560             & 0.8491        & \textbf{0.8747}    & \underline{0.8659} & 0.8351             \\
+					CiteSeer         & 0.7146             & 0.7046        & \underline{0.7172} & \textbf{0.7236}    & 0.7089             \\
+					Squirrel         & \underline{0.3659} & 0.3605        & 0.3544             & \textbf{0.3755}    & 0.3549             \\
+					PubMed           & 0.8515             & 0.8457        & \textbf{0.8825}    & \underline{0.8643} & 0.8596             \\
+					CoraFull         & 0.6211             & 0.6371        & \underline{0.6450} & \textbf{0.6555}    & 0.6385             \\
+					DBLP             & 0.8051             & 0.7996        & \textbf{0.8118}    & 0.8085             & \underline{0.8088} \\
+					Computers        & 0.6973             & 0.5999        & \textbf{0.8945}    & \underline{0.8047} & 0.7428             \\
+					Flickr           & 0.0864             & 0.0961        & \textbf{0.1908}    & \underline{0.1460} & 0.1069             \\
+					ArXiv            & 0.3950             & 0.3796        & \underline{0.3987} & \textbf{0.4098}    & 0.3955             \\
+					\bottomrule
+				\end{tabular}
+				\caption{Final F1 scores for each HPO method and for each dataset, averaged over 10 independent runs. The best method is \textbf{bold} and the second best is \underline{underlined}.}
+			\end{table}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Benchmark results -- ranks}
+	\begin{center}
+		\adjustbox{width=0.8\columnwidth}{%
+			\input{images/benchmark_ranks/benchmark_ranks.pgf}
+		}
+	\end{center}
+	Ranks-over-time of the benchmarked HPO methods over the progress of the optimization, aggreagated over 10 independent runs for each of 9 datasets.
+\end{frame}
+
+\begin{frame}{An RF-based approach}
+	We assume that we have:
+	\begin{itemize}
+		\item A graph property extraction function \( \delta : \mathrm{D} \to \mathfield{R}^d \)
+		\item A meta-model \( \mathcal{M}_\rho : \mathfield{R}^d \times \boldsymbol\Lambda \to \mathfield{R} \) that predicts a performance metric \( \rho \) given dataset properties and hyperparameter configuration
+	\end{itemize}
+	We propose a HPO method using such a metamodel:
+	\begin{equation*}
+		\tau \left( \mathcal{D}, \mathscr{F}, \tilde{\Lambda}, \rho \right) = \argmax_{\lambda \in \tilde{\Lambda}} \mathcal{M}_\rho \left( \delta \left( \mathcal{D} \right), \lambda \right)
+	\end{equation*}
+	Meta model is cheap \( \rightarrow \) \( \argmax \) is feasible
+\end{frame}
+
+\begin{frame}{Meta-dataset}
+	A meta-dataset used to train the metamodel:
+	\begin{center}
+		\resizebox{\linewidth}{!}{%
+			\begin{tabular}{rrrrrrrr}
+				\toprule
+				\multicolumn{4}{c}{\textbf{Dataset properties}} & \multicolumn{3}{c}{\textbf{Hyper-parameters}} & \textbf{Perf.\ metrics} \\
+				\cmidrule(r){1-4} \cmidrule(lr){5-7} \cmidrule(l){8-8}
+				\textbf{Node count} & \textbf{Class ratio} & \textbf{\# of components} & \textbf{Avg.\ node degree} & \textbf{\# of layers} & \textbf{Dropout} & \textbf{Activation} & \textbf{F1} \\
+				\midrule
+				6 & 1 / 3 & 1 & 2 & 2 & 0.3 & ReLU & 0.65 \\
+				6 & 1 / 3 & 1 & 2 & 3 & 0.3 & ReLU & 0.7 \\
+				6 & 1 / 3 & 1 & 2 & 2 & 0.5 & ReLU & 0.62 \\
+				6 & 1 / 3 & 1 & 2 & 3 & 0.5 & ReLU & 0.6 \\
+				\bottomrule
+			\end{tabular}
+		}
+	\end{center}
+\end{frame}
+
+\begin{frame}{The Cross-RF metamodel}
+	Can we pretrain the metamodel on other datasets and transfer to a new one?
+
+	\vspace{1cm}
+	\hspace{1cm}\uncover<2->{\textbf{Yes.}}
+\end{frame}
+
+\begin{frame}{Experiment setup}
+	\begin{itemize}
+		\item Used a random forrest regressor as the meta-model
+		\item 100 trees, default paramers from \texttt{scikit-learn}
+		\item For each of the 9 datasets, pretrain Cross-RF on the other 8
+		\item In each step, all of the already evaluated configurations are excluded from \( \tilde{\Lambda} \)
+		\item In all experiments, we used the F1-score as the performance metric \( \rho \)
+		\item Compared with BO and TPE (best methods from the benchmark)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Meta-model results}
+	\begin{columns}[t,onlytextwidth]
+		\begin{column}{0.45\textwidth}
+			\begin{itemize}
+				\item Cross-RF achieves the best final performance on 4 out of the 9 datasets, while being second best on another 3 datasets.
+				\item Only on the CiteSeer and CoraFull datasets does Cross-RF perform worse than both reference methods.
+				\item Overall, Cross-RF achieves an average rank of 1.78, outperforming both BO (2.0) and TPE (2.22).
+			\end{itemize}
+		\end{column}
+
+		\begin{column}{0.52\textwidth}
+			\begin{table}
+				\centering
+			\scriptsize
+				\begin{tabular}{lccccc}
+					\toprule
+					\textbf{Dataset} & \textbf{BO}        & \textbf{TPE}       & \textbf{Cross-RF}  \\
+					\midrule
+					Cora             & \textbf{0.8747}    & 0.8659             & \underline{0.8727} \\
+					CiteSeer         & \underline{0.7172} & \textbf{0.7236}    & 0.7095             \\
+					Squirrel         & 0.3544             & \underline{0.3755} & \textbf{0.3769}    \\
+					PubMed           & \textbf{0.8825}    & 0.8643             & \underline{0.8807} \\
+					CoraFull         & \underline{0.6450} & \textbf{0.6555}    & 0.6426             \\
+					DBLP             & \underline{0.8118} & 0.8085             & \textbf{0.8123}    \\
+					Computers        & \underline{0.8945} & 0.8047             & \textbf{0.9023}    \\
+					Flickr           & \underline{0.1908} & 0.1460             & \textbf{0.1956}    \\
+					ArXiv            & 0.3987             & \textbf{0.4098}    & \underline{0.4094} \\
+					\bottomrule
+				\end{tabular}
+				\caption{Final F1 scores for each HPO method and for each dataset, averaged over 10 independent runs. The best method is \textbf{bold} and the second best is \underline{underlined}.}
+			\end{table}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%\begin{frame}{Meta-model results -- ranks}
+%	\begin{center}
+%		\adjustbox{width=0.8\columnwidth}{%
+%			\input{images/cross-rf_ranks/cross-rf_ranks.pgf}
+%		}
+%	\end{center}
+%	Ranks-over-time of Cross-RF and reference methods over the progress of the optimization, aggreagated over 10 independent runs for each of 9 datasets.
+%\end{frame}
+
+\begin{frame}{Future work}
+	Immediate next steps:
+	\begin{itemize}
+		\item Including a broader range of GNN architectures
+		\item Considering other performance metrics
+		\item Comparing to newer HPO methods
+	\end{itemize}
+
+	Longer-term directions:
+	\begin{itemize}
+		\item Pre-training the metamodel on synthetic datasets generated from known graph models
+		\item Using a different metamodel architecture which is better suited to continuous search spaces
+		\item Incorporating the metamodel as a surrogate model within an SMBO framework
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+	\begin{itemize}
+		\item Evaluated standard HPO algorithms for GNNs
+		\item Shown the metamodel hyperparameter optimization algorithm for GNNs to beat standard methods
+		\item Implemented as a standard Optuna sampler
+		\item More interesting research to come
+	\end{itemize}
+\end{frame}
+
+\titlegraphic{%
+	\begin{tikzpicture}[overlay,remember picture]
+		\node[anchor=east, align=center, left=0.2cm, yshift=-1.3cm] at (current page.east){%
+			\includegraphics[width=0.25\textwidth]{images/qr-code.png} \\
+			\small More at \url{dedic.eu}
+		};
+	\end{tikzpicture}
+}
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\appendix
+
+\begin{frame}[allowframebreaks]{Bibliography}
+	\printbibliography
+\end{frame}
+
+\begin{frame}
+	\begin{table}[ht]
+		\begin{tabular}{lrrrr}
+			\toprule
+			\textbf{Dataset} & \textbf{\#Nodes} & \textbf{\#Edges} & \textbf{\#Features} & \textbf{\#Classes} \\
+			\midrule
+			Cora		     & 2\,708           & 10\,556          & 1\,433              & 7                  \\
+			CiteSeer         & 3\,327           & 9\,104           & 3\,703              & 6                  \\
+			Squirrel         & 5\,201           & 198\,493         & 3\,169              & 5                  \\
+			PubMed           & 19\,717          & 88\,648          & 500                 & 3                  \\
+			CoraFull         & 19\,793          & 126\,842         & 8\,710              & 70                 \\
+			DBLP             & 17\,716          & 105\,734         & 1\,639              & 4                  \\
+			Computers        & 13\,752          & 491\,722         & 767                 & 10                 \\
+			Flickr           & 89\,250          & 899\,756         & 500                 & 7                  \\
+			ArXiv            & 169\,343         & 1\,166\,243      & 128                 & 40                 \\
+			\bottomrule
+		\end{tabular}
+		\caption{Datasets used in the benchmark}
+	\end{table}
+\end{frame}
+
+\begin{frame}
+	\begin{table}
+		\resizebox{\linewidth}{!}{%
+			\centering
+			\begin{tabular}{lcccccccccc}
+				\toprule
+				\textbf{Dataset} & \textbf{Ep.} & \textbf{Lyrs.} & \textbf{HW} & \textbf{Act.}                                & \textbf{Opt.}                                & \textbf{Drop.}                          & \textbf{Agg.}                              & \textbf{ES} & \textbf{L2}                                       & \textbf{LR}                                          \\
+				\midrule
+				\multicolumn{11}{l}{\textit{Small datasets}} \\
+				\addlinespace
+				Cora             & 200          & 1--3           & 16--64      & \multirow{11}{*}{\shortstack{ReLU, \\ PReLU}} & \multirow{11}{*}{\shortstack{Adam, \\ AdamW}} & \multirow{11}{*}{\shortstack{0, \\ 0.5}} & \multirow{11}{*}{\shortstack{Mean, \\ Max}} & 10          & 0, \( 5 \times 10^{-4} \), \( 5 \times 10^{-3} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				CiteSeer         & 200          & 1--3           & 16--64      &                                              &                                              &                                         &                                            & 10          & 0, \( 5 \times 10^{-4} \), \( 5 \times 10^{-3} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				Squirrel         & 500          & 1--3           & 32--128     &                                              &                                              &                                         &                                            & 20          & 0, \( 5 \times 10^{-4} \), \( 5 \times 10^{-3} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				\addlinespace
+				\multicolumn{11}{l}{\textit{Medium datasets}} \\
+				\addlinespace
+				PubMed           & 200          & 1--3           & 16--64      &                                              &                                              &                                         &                                            & 10          & 0, \( 5 \times 10^{-4} \), \( 5 \times 10^{-3} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				CoraFull         & 500          & 2--3           & 64--128     &                                              &                                              &                                         &                                            & 20          & 0, \( 5 \times 10^{-5} \), \( 5 \times 10^{-4} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				DBLP             & 500          & 2--3           & 64--128     &                                              &                                              &                                         &                                            & 20          & 0, \( 5 \times 10^{-5} \), \( 5 \times 10^{-4} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				Computers        & 500          & 2--3           & 64--128     &                                              &                                              &                                         &                                            & 20          & 0, \( 5 \times 10^{-5} \), \( 5 \times 10^{-4} \) & \( 10^{-2} \), \( 5 \times 10^{-3} \), \( 10^{-3} \) \\
+				Flickr           & 100          & 2--3           & 128--256    &                                              &                                              &                                         &                                            & 10          & 0, \( 5 \times 10^{-4} \)                         & \( 5 \times 10^{-3} \), \( 10^{-3} \)                \\
+				\addlinespace
+				\multicolumn{11}{l}{\textit{Large datasets}} \\
+				\addlinespace
+				ArXiv            & 150          & 2--3           & 256--512    &                                              &                                              &                                         &                                            & 10          & 0, \( 5 \times 10^{-4} \)                         & \( 10^{-2} \), \( 5 \times 10^{-3} \)                \\
+				\bottomrule
+			\end{tabular}
+		}
+		\caption{Hyperparameters based on dataset sizes.}
+		\vspace{0.05cm}
+
+		{\footnotesize \textbf{Abbreviations}: \textbf{Ep.}: Epochs, \textbf{Lyrs.}: Number of layers, \textbf{HW}: Hidden Layer Width, \textbf{Act.}: Activation Fn., \textbf{Opt.}: Optimizer, \textbf{Drop.}: Dropout Rate, \textbf{Agg.}: Aggregation Fn., \textbf{ES}: Early Stopping patience, \textbf{L2}: \( L_2 \) Regularization, \textbf{LR}: Learning Rate.}
+	\end{table}
+\end{frame}
+
+\begin{frame}
+	\begin{table}
+		\resizebox{1\linewidth}{!}{%
+			\centering
+			\begin{tabularx}{1.75\linewidth}{lcccX}
+				\toprule
+				\multirow{2}{*}{\textbf{Graph Property}}           & \multicolumn{3}{c}{\textbf{Relates to}}                   & \multirow{2}{*}{\textbf{Description / Definition}} \\
+				\cmidrule(lr){2-4}
+																   & \textbf{Task} & \textbf{Struct.} & \textbf{Attrs.} & \\
+				\midrule
+				\textbf{Node count}                                & \crossmark    & \crossmark         & \crossmark          & Number of nodes. \\
+				\textbf{Edge count}                                & \crossmark    & \crossmark         & \crossmark          & Number of edges. \\
+				\textbf{Number of components}                      & \crossmark    & \checkmark         & \crossmark          & Number of connected components of the graph. \\
+				\textbf{Average node degree}                       & \crossmark    & \checkmark         & \crossmark          & Average node degree in the graph. \\
+				\textbf{Global assortativity}                      & \crossmark    & \checkmark         & \crossmark          & Measure of the tendency of nodes to connect with other similar nodes, rather than dissimilar nodes. \\
+				\textbf{Attribute similarity}                      & \crossmark    & \checkmark         & \checkmark          & Average cosine similarity of attributes across all edges in the graph. \\
+				\textbf{Attribute homophily}                       & \checkmark    & \checkmark         & \crossmark          & Measure of how clustered together are nodes with similar attributes. \\
+				\textbf{Edge homophily}                            & \checkmark    & \checkmark         & \crossmark          & Fraction of edges connecting nodes of the same class. \\
+				\textbf{Node homophily}                            & \checkmark    & \checkmark         & \crossmark          & Fraction of node neighbours having the same class as the node in question, averaged over all nodes. \\
+				\textbf{Class homophily}                           & \checkmark    & \checkmark         & \crossmark          & A modification of node homophily that is invariant to the number of classes. \\
+				\textbf{Ratio of positive nodes of degree $>1$}    & \checkmark    & \checkmark         & \crossmark          & Ratio of positive nodes with degree greater than one. \\
+				\textbf{Fraction of positive nodes of degree $>2$} & \checkmark    & \checkmark         & \crossmark          & The fraction of positive nodes with degree greater than two, out of those with degree greater than one. \\
+				\textbf{Average positive node degree}              & \checkmark    & \checkmark         & \crossmark          & Average node degree in the sub-graph restricted to positive nodes. \\
+				\textbf{Relative presence of positive edges}       & \checkmark    & \checkmark         & \crossmark          & Number of edges connecting positive nodes, divided by the number of edges that would be present in a theoretical clique constructed of all positive nodes. \\
+				\textbf{Positive attribute similarity}             & \checkmark    & \crossmark         & \checkmark          & Avg.\ feature similarity within positive class. \\
+				\textbf{Positive to negative attribute similarity} & \checkmark    & \crossmark         & \checkmark          & Avg.\ feature similarity of positive vs negative nodes. \\
+				\textbf{Negative to positive attribute similarity} & \checkmark    & \crossmark         & \checkmark          & Avg.\ feature similarity of negative vs positive nodes. \\
+				\textbf{Adjusted homophily}                        & \checkmark    & \checkmark         & \crossmark          & Homophily adjusted for degree–class distribution. \\
+				\textbf{Node label informativeness}                & \checkmark    & \checkmark         & \crossmark          & Mutual‐information‐based measure of how informative node labels are about the graph’s connectivity. \\
+				\textbf{Balanced accuracy}                         & \checkmark    & \checkmark         & \crossmark          & Class‐averaged fraction of edges connecting nodes to same‐class neighbors. \\
+				\textbf{Adjusted accuracy}                         & \checkmark    & \checkmark         & \crossmark          & Accuracy metric adjusted to range $[0,1]$ based on balanced accuracy. \\
+				\bottomrule
+			\end{tabularx}
+		}
+		\caption{Graph dataset properties considered.}
+	\end{table}
+\end{frame}
+
+\end{document}
