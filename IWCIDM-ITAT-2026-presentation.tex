@@ -154,18 +154,27 @@
 	\end{itemize}
 \end{frame}
 
-
-\begin{frame}{An RF-based approach}
+\begin{frame}{The Cross-RF method}
 	We assume that we have:
 	\begin{itemize}
 		\item A graph property extraction function \( \delta : \mathrm{D} \to \mathfield{R}^d \)
 		\item A meta-model \( \mathcal{M}_\rho : \mathfield{R}^d \times \boldsymbol\Lambda \to \mathfield{R} \) that predicts a performance metric \( \rho \) given dataset properties and hyperparameter configuration
 	\end{itemize}
-	We propose a HPO method using such a metamodel:
-	\begin{equation*}
-		\tau \left( \mathcal{D}, \mathscr{F}, \tilde{\Lambda}, \rho \right) = \argmax_{\lambda \in \tilde{\Lambda}} \mathcal{M}_\rho \left( \delta \left( \mathcal{D} \right), \lambda \right)
-	\end{equation*}
-	Meta model is cheap \( \rightarrow \) \( \argmax \) is feasible
+	\begin{overprint}
+		\onslide<1>
+		We propose a HPO method using such a metamodel:
+		\vspace{1em}
+
+		\centering
+		\includegraphics[width=0.8\linewidth]{images/cross-rf-overview/cross-rf-overview.pdf}
+
+		\onslide<2>
+		More formally:
+		\begin{equation*}
+			\tau \left( \mathcal{D}, \mathscr{F}, \tilde{\Lambda}, \rho \right) = \argmax_{\lambda \in \tilde{\Lambda}} \mathcal{M}_\rho \left( \delta \left( \mathcal{D} \right), \lambda \right)
+		\end{equation*}
+		Meta model is cheap \( \rightarrow \) \( \argmax \) is feasible
+	\end{overprint}
 \end{frame}
 
 \begin{frame}{Meta-dataset}

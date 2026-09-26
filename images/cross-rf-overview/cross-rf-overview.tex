@@ -1,0 +1,50 @@
+\RequirePackage{luatex85}
+\documentclass[tikz]{standalone}
+
+\usepackage{polyglossia}
+\usepackage{fontspec}
+\usepackage{csquotes}
+\usepackage{mathrsfs}
+
+\setdefaultlanguage{english}
+\setmainfont{TeX Gyre Termes}
+
+\usetikzlibrary{arrows.meta,calc}
+
+\begin{document}
+
+\begin{tikzpicture}[
+	box/.style={draw=black, rounded corners=4pt, fill=white, minimum width=3.5cm, minimum height=1.0cm, align=center, font=\fontsize{24}{29}\selectfont, inner sep=12pt},
+	arrow/.style={->, thick, >=stealth},
+	dasharrow/.style={->, thick, >=stealth, dashed},
+]
+
+% Two dataset sources (left)
+\node[box, fill=blue!10] (other) at (0,  2.2)
+	{Other datasets\\[-2pt]$\mathcal{D}_1 \ldots \mathcal{D}_n$};
+\node[box, fill=blue!20] (dstar) at (0, -2.2)
+	{New dataset $\mathcal{D}$};
+
+% Meta-dataset (centre)
+\node[box, fill=green!15] (meta) at (9, 0)
+	{Meta-dataset $\mathscr{H}$\\[-4pt]{\fontsize{20}{24}\selectfont$(\delta(\mathcal{D}_i),\;\lambda,\;\rho)$}};
+
+% RF and result (right)
+\node[box, fill=red!10] (rf) at (18, 0)
+	{RF model $\mathcal{M}_\rho$};
+\node[box, fill=yellow!40] (result) at (18, -3.5)
+	{Proposed config $\lambda$};
+
+% Pre-training: D1..Dn -> H
+\draw[dasharrow] (other.east) -- node[above, font=\fontsize{20}{24}\selectfont]{pre-training} (9, 2.2) -- ($(meta.north)+(0,0.3)$) -- (meta.north);
+
+% Deployment: D* also contributes HPO runs to H
+\draw[arrow] (dstar.east) -- node[below, font=\fontsize{20}{24}\selectfont]{HPO runs} (9, -2.2) -- ($(meta.south)+(0,-0.3)$) -- (meta.south);
+
+% H trains RF; RF predicts for D*
+\draw[arrow] (meta.east) -- (rf.west);
+\draw[arrow] (rf.south) -- node[right, font=\fontsize{20}{24}\selectfont]{$\delta(\mathcal{D})$} (result.north);
+
+\end{tikzpicture}
+
+\end{document}
