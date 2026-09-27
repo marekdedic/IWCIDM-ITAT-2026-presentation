@@ -135,24 +135,6 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Evaluated standard algorithms}
-	\begin{itemize}
-		\item Grid search
-		\item Random search
-		\item Bayesian optimization
-		\item Sobol Quasi-Monte Carlo
-		\item Tree-structured Parzen Estimator
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Experiment setup}
-	\begin{itemize}
-		\item 9 standard datasets (34 nodes -- 169k nodes)
-		\item GraphSAGE model with 8 hyperparameters
-		\item 10 repeated iterations for each configuration
-		\item HPO early-stopping based on wall-clock time \& improvement
-	\end{itemize}
-\end{frame}
 
 \begin{frame}{The Cross-RF method}
 	We assume that we have:
@@ -206,12 +188,20 @@
 
 \begin{frame}{Experiment setup}
 	\begin{itemize}
+		\item Cora dataset (2 708 nodes, 5 429 edges)
+		\item GraphSAGE model with 8 hyperparameters
+		\item 5 repeated iterations for each configuration
+		\item HPO early-stopping based on wall-clock time \& improvement
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Experiment setup}
+	\begin{itemize}
 		\item Used a random forrest regressor as the meta-model
 		\item 100 trees, default paramers from \texttt{scikit-learn}
-		\item For each of the 9 datasets, pretrain Cross-RF on the other 8
+		\item Pretrained on 5 synthetic datasets with 30 hyperparameter configurations each
 		\item In each step, all of the already evaluated configurations are excluded from \( \tilde{\Lambda} \)
-		\item In all experiments, we used the F1-score as the performance metric \( \rho \)
-		\item Compared with BO and TPE (best methods from the benchmark)
+		\item Compared with random search (best methods from the benchmark)
 	\end{itemize}
 \end{frame}
 
