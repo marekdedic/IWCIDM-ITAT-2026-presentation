@@ -29,6 +29,10 @@
 \usepackage{ulem}
 \usepackage{url}
 
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes.geometric}
+
 \addbibresource{zotero.bib}
 
 \setdefaultlanguage{english}
@@ -203,6 +207,79 @@
 			\node<2->[font=\bfseries] at (0.05,1.1) {Synthetic};
 		\end{scope}
 	\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Why go synthetic?}
+	\begin{itemize}
+		\item Cross-RF: pretrained on a few real datasets \( \rightarrow \) target may be \textit{out-of-distribution}
+		\item<2-> Synthetic-RF: \textbf{generate} the pretraining datasets \textit{around} the target
+		\item<2-> Tuner unchanged, only the meta-dataset used to train \( \mathcal{M}_\rho \) changes
+	\end{itemize}
+	\vspace{1em}
+	\centering
+	\includestandalone[width=0.75\linewidth]{images/descriptor-space/descriptor-space}
+\end{frame}
+
+\begin{frame}{Generating synthetic datasets}
+	Summarize the target dataset \( \mathcal{D} \) by
+	\[
+		\boldsymbol{s} = \left( n, \, k, \, \bar{c}, \, h, \, m \right)
+	\]
+	\begin{itemize}
+		\item \( n \): number of nodes, \( k \): number of classes, \( \bar{c} \): average degree
+		\item \( h \): edge homophily, \( m \): number of node features
+	\end{itemize}
+	\vspace{1em}
+	\uncover<2->{%
+		For each synthetic dataset, perturb the first four statistics:
+		\[
+			\tilde{s}_j = \mathrm{clip} \left( u_j \, s_j \right), \quad u_j \sim \mathcal{U} \left( 1 - \varepsilon, 1 + \varepsilon \right)
+		\]
+		Clipping keeps the target bracketed (RF cannot extrapolate)
+	}
+\end{frame}
+
+\begin{frame}{Stochastic block model}
+	\begin{columns}[c,onlytextwidth]
+		\begin{column}{0.45\textwidth}
+			\centering
+			\includestandalone[width=\linewidth]{images/sbm/sbm}
+		\end{column}
+		\begin{column}{0.52\textwidth}
+			Stochastic block model\footcite{holland_stochastic_1983} with
+			\[
+				p_\text{in} = \frac{\tilde{h} \, \tilde{c}}{\bar{b}}, \qquad p_\text{out} = \frac{\left( 1 - \tilde{h} \right) \tilde{c}}{\tilde{n} - \bar{b}}
+			\]
+			where \( \bar{b} = \tilde{n} / \tilde{k} \) is the average block size
+
+			\vspace{1em}
+			\uncover<2->{%
+				Preserved in expectation:
+				\begin{itemize}
+					\item Average degree \( \tilde{c} \)
+					\item Edge homophily \( \tilde{h} \)
+				\end{itemize}
+			}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Node features}
+	\begin{itemize}
+		\item Features generated conditionally on the class\footcite{guyon_design_2003}
+		\item Each class \( \rightarrow \) one Gaussian cluster centred at a vertex of a hypercube
+		\item All features informative, no label noise
+		\item \( \tilde{m} = \max \left( m, \left\lceil \log_2 \tilde{k} \right\rceil + 1 \right) \) to fit one cluster per class
+	\end{itemize}
+	\vspace{1em}
+	\uncover<2->{%
+		Result: a complete synthetic node-classification dataset
+		\begin{itemize}
+			\item Train GNNs on it with various configurations \( \lambda \)
+			\item Add \( \left( \delta \left( \tilde{\mathcal{D}} \right), \lambda, \rho \right) \) to the meta-dataset
+			\item Pretrain the metamodel \( \mathcal{M}_\rho \) on these, then tune on \( \mathcal{D} \)
+		\end{itemize}
+	}
 \end{frame}
 
 \begin{frame}{Experiment setup}
