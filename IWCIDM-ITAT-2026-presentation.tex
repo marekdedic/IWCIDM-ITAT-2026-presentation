@@ -187,6 +187,24 @@
 	\hspace{1cm}\uncover<2->{\textbf{Yes.}}
 \end{frame}
 
+\begin{frame}{From Cross-RF to Synthetic-RF}
+	\centering
+
+	{\Large\textbf{Cross-RF \uncover<2->{ \( \rightarrow \) Synthetic-RF}}}
+
+	\vspace{1em}
+
+	\begin{tikzpicture}
+		\node[anchor=south west, inner sep=0] (img) at (0,0) {\includegraphics[width=0.8\linewidth]{images/cross-rf-overview/cross-rf-overview.pdf}};
+		% Coordinates relative to the image: (0,0) = bottom left, (1,1) = top right
+		\begin{scope}[x={(img.south east)}, y={(img.north west)}]
+			\draw<2->[red, line width=3pt, line cap=round] (0.02,0.85) -- (0.1,0.97) (0.02,0.97) -- (0.1,0.85);
+			\node<-1>[white, font=\bfseries] at (0.05,1.1) {Synthetic};
+			\node<2->[font=\bfseries] at (0.05,1.1) {Synthetic};
+		\end{scope}
+	\end{tikzpicture}
+\end{frame}
+
 \begin{frame}{Experiment setup}
 	\begin{itemize}
 		\item Cora dataset (2 708 nodes, 5 429 edges)
