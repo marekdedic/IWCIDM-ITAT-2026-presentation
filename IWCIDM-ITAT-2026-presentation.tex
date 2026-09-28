@@ -114,6 +114,16 @@
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{What this talk is about}
+	\textbf{Goals of this talk}:
+	\begin{itemize}
+		\item Show that old wisdoms about hyperparameter transfer may be wrong in some domains
+		\item Explain the \textit{Cross-RF} method for hyperparameter transfer\footcite{dedic_benchmarking_2026}
+		\item Explain the \textit{Synthetic-RF} method for hyperparameter transfer
+		\item Experimetally check whether Synthetic-RF is viable at all
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{HPO loop}
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/HPO-loop.pdf}\footcite{bischl_hyperparameter_2023}
@@ -130,14 +140,6 @@
 		\item \( \mathscr{F} \): learning algorithm
 		\item \( \tilde{\Lambda} \): search space
 		\item \( \rho \): performance metric
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Contributions}
-	\textbf{Goals \& contributions}:
-	\begin{itemize}
-		\item Systematic HPO Benchmark on GNNs
-		\item Meta-Learning for Hyperparameter Transfer\footnote{Building on previous work \cite{prochazka_which_2023}}
 	\end{itemize}
 \end{frame}
 
