@@ -21,6 +21,7 @@
 \usepackage{microtype}
 \usepackage{multirow}
 \usepackage{pifont}
+\usepackage{fancyqr}
 \usepackage[mode=buildnew]{standalone}
 \usepackage{subcaption}
 \usepackage{tabularx}
@@ -335,14 +336,14 @@
 	\end{itemize}
 \end{frame}
 
-%\titlegraphic{%
-%	\begin{tikzpicture}[overlay,remember picture]
-%		\node[anchor=east, align=center, left=0.2cm, yshift=-1.3cm] at (current page.east){%
-%			\includegraphics[width=0.25\textwidth]{images/qr-code.png} \\
-%			\small More at \url{dedic.eu}
-%		};
-%	\end{tikzpicture}
-%}
+\titlegraphic{%
+	\begin{tikzpicture}[overlay,remember picture]
+		\node[anchor=east, align=center, left=0.2cm, yshift=-1.3cm] at (current page.east){%
+			\fancyqr[height=0.2\textwidth, color=black]{https://dedic.eu/publications\#dedic_towards_2026} \\
+			\small More at \url{dedic.eu}
+		};
+	\end{tikzpicture}
+}
 
 \begin{frame}
 	\titlepage
