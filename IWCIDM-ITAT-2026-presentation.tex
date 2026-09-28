@@ -296,43 +296,18 @@
 		\item 100 trees, default paramers from \texttt{scikit-learn}
 		\item Pretrained on 5 synthetic datasets with 30 hyperparameter configurations each
 		\item In each step, all of the already evaluated configurations are excluded from \( \tilde{\Lambda} \)
-		\item Compared with random search (best methods from the benchmark)
+		\item Compared with random search
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Meta-model results}
-	\begin{columns}[t,onlytextwidth]
-		\begin{column}{0.45\textwidth}
-			\begin{itemize}
-				\item Cross-RF achieves the best final performance on 4 out of the 9 datasets, while being second best on another 3 datasets.
-				\item Only on the CiteSeer and CoraFull datasets does Cross-RF perform worse than both reference methods.
-				\item Overall, Cross-RF achieves an average rank of 1.78, outperforming both BO (2.0) and TPE (2.22).
-			\end{itemize}
-		\end{column}
+\begin{frame}{Synthetic-RF results}
+	Is the Synthetic-RF approach completely misguided?
 
-		\begin{column}{0.52\textwidth}
-			\begin{table}
-				\centering
-			\scriptsize
-				\begin{tabular}{lccccc}
-					\toprule
-					\textbf{Dataset} & \textbf{BO}        & \textbf{TPE}       & \textbf{Cross-RF}  \\
-					\midrule
-					Cora             & \textbf{0.8747}    & 0.8659             & \underline{0.8727} \\
-					CiteSeer         & \underline{0.7172} & \textbf{0.7236}    & 0.7095             \\
-					Squirrel         & 0.3544             & \underline{0.3755} & \textbf{0.3769}    \\
-					PubMed           & \textbf{0.8825}    & 0.8643             & \underline{0.8807} \\
-					CoraFull         & \underline{0.6450} & \textbf{0.6555}    & 0.6426             \\
-					DBLP             & \underline{0.8118} & 0.8085             & \textbf{0.8123}    \\
-					Computers        & \underline{0.8945} & 0.8047             & \textbf{0.9023}    \\
-					Flickr           & \underline{0.1908} & 0.1460             & \textbf{0.1956}    \\
-					ArXiv            & 0.3987             & \textbf{0.4098}    & \underline{0.4094} \\
-					\bottomrule
-				\end{tabular}
-				\caption{Final F1 scores for each HPO method and for each dataset, averaged over 10 independent runs. The best method is \textbf{bold} and the second best is \underline{underlined}.}
-			\end{table}
-		\end{column}
-	\end{columns}
+	\vspace{1cm}
+	\hspace{1cm}\uncover<2->{\textbf{No.}}
+
+	\vspace{1cm}
+	\hspace{1cm}\uncover<3->{(Random search F1-score: \( 0.8535 \), Synthetic-RF F1-score: \( 0.8628 \))}
 \end{frame}
 
 
