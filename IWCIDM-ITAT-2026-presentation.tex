@@ -310,18 +310,18 @@
 	\hspace{1cm}\uncover<3->{(Random search F1-score: \( 0.8535 \), Synthetic-RF F1-score: \( 0.8628 \))}
 \end{frame}
 
-
 \begin{frame}{Future work}
 	Immediate next steps:
 	\begin{itemize}
 		\item Including a broader range of GNN architectures
 		\item Considering other performance metrics
 		\item Comparing to newer HPO methods
+		\item Consider other synthetic graph generation methods
 	\end{itemize}
 
 	Longer-term directions:
 	\begin{itemize}
-		\item Pre-training the metamodel on synthetic datasets generated from known graph models
+		\item De-couple the synthetic datasets from the target dataset
 		\item Using a different metamodel architecture which is better suited to continuous search spaces
 		\item Incorporating the metamodel as a surrogate model within an SMBO framework
 	\end{itemize}
@@ -329,8 +329,7 @@
 
 \begin{frame}{Conclusion}
 	\begin{itemize}
-		\item Evaluated standard HPO algorithms for GNNs
-		\item Shown the metamodel hyperparameter optimization algorithm for GNNs to beat standard methods
+		\item Shown that synthetic datasets can be used to pretrain a hyperparameter optimizer for GNNs
 		\item Implemented as a standard Optuna sampler
 		\item More interesting research to come
 	\end{itemize}
